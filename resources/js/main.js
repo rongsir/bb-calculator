@@ -10,17 +10,29 @@ requirejs(['jquery','backbone'],function($){
 
     var CalculatorView = Backbone.View.extend({
       el: $("#bb-calculator"),
+      events: {
+        "click .numbers .kb": "pressNumber",
+        "click .operators .kb": "setCurrentOperator",
+        "click .calculation.kb": "doCalculation",
+        "click.stopChain .calculation.kb": "setStopChain",
+        "click .clear-display": "reset"
+      },
       initialize: function(){
         this.displayContent = this.$(".display .content");
         this.reset();
       },
-      events: {
-        "click .numbers .kb": "renderDisplay",
-        "click .operators .kb": "setCurrentOperator",
-        "click .calculation.kb": "doCalculation",
-        "click .clear-display": "reset"
+      reset: function(){
+        this.clearDisplay();
+        this.currentOperator = '';
+        this.firstNum = undefined;
+        this.secondNum = undefined;
+        this.needNewInput = false;
+        this.stopChain = false;
       },
-      renderDisplay: function(e){
+      pressNumber: function(e){
+        if (this.stopChain === true){
+          this.reset();
+        }
         var clickedValue = $(e.target).html();
         if (this.needNewInput){
           this.clearDisplay();
@@ -40,27 +52,23 @@ requirejs(['jquery','backbone'],function($){
           }
         }
         this.secondNum = this.displayContent.html();
+        this.stopChain = false;
       },
       clearDisplay: function(){
-        this.currentResult = 0;
-        this.displayContent.html(this.currentResult);
-      },
-      reset: function(){
-        this.clearDisplay();
-        this.currentOperator = '';
-        this.firstNum = undefined;
-        this.secondNum = undefined;
-        this.currentResult = 0;
-        this.needNewInput = false;
+        this.displayContent.html(0);
       },
       setCurrentOperator: function(e){
-        //if(this.currentOperator !== ''){
-          //this.doCalculation();
-        //}
+        if(this.stopChain === false){
+          this.doCalculation();
+        }
         this.currentOperator = $(e.target).html();
         this.firstNum = this.displayContent.html();
         this.secondNum = this.firstNum;
         this.needNewInput = true;
+        this.stopChain = false;
+      },
+      setStopChain: function(){
+        this.stopChain = true;
       },
       add: function(a, b){
         return parseFloat(a) + parseFloat(b);
@@ -75,20 +83,23 @@ requirejs(['jquery','backbone'],function($){
         return parseFloat(a) / parseFloat(b);
       },
       doCalculation: function(isChainable){
+        var result = 0
         if (this.currentOperator === "+"){
-          this.currentResult = this.add(this.firstNum, this.secondNum);
+          result = this.add(this.firstNum, this.secondNum);
         }
         else if (this.currentOperator === "-"){
-          this.currentResult = this.subtract(this.firstNum, this.secondNum);
+          result = this.subtract(this.firstNum, this.secondNum);
         }
         else if (this.currentOperator === "*"){
-          this.currentResult = this.multiply(this.firstNum, this.secondNum);
+          result = this.multiply(this.firstNum, this.secondNum);
         }
         else if (this.currentOperator === "/"){
-          this.currentResult = this.divide(this.firstNum, this.secondNum);
+          result = this.divide(this.firstNum, this.secondNum);
+        } else {
+          return;
         }
-        this.firstNum = this.currentResult;
-        this.displayContent.html(this.currentResult);
+        this.firstNum = result;
+        this.displayContent.html(result);
         this.needNewInput = true;
       }
     });

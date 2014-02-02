@@ -41,6 +41,7 @@ ul{
 }
 .display .content{
   padding-right: 8px;
+  white-space: nowrap;
 }
 .keypad{
   font-size: 1.4em;
