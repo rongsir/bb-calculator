@@ -29,6 +29,9 @@ requirejs(['jquery','backbone'],function($){
         this.needNewInput = false;
         this.stopChain = false;
       },
+      clearDisplay: function(){
+        this.displayContent.html(0);
+      },
       pressNumber: function(e){
         if (this.stopChain === true){
           this.reset();
@@ -53,9 +56,6 @@ requirejs(['jquery','backbone'],function($){
         }
         this.secondNum = this.displayContent.html();
         this.stopChain = false;
-      },
-      clearDisplay: function(){
-        this.displayContent.html(0);
       },
       setCurrentOperator: function(e){
         if(this.stopChain === false){
