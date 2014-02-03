@@ -98,6 +98,13 @@ requirejs(['jquery','backbone'],function($){
         } else {
           return;
         }
+        if (Math.abs(result) >= 1e+9){
+            result = result.toExponential(5);
+        } else if (Math.abs(result) <= 1e-3){
+            result = result.toExponential(5);
+        } else if (Math.abs(result).toString().length >= 10){
+            result = result.toPrecision(8);
+        }
         this.firstNum = result;
         this.displayContent.html(result);
         this.needNewInput = true;
